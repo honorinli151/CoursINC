@@ -1,10 +1,15 @@
 # CoursINC
-## First Project
-Initialized Fisrt Created
+## First Lesson
 
-TODO： 
-1. Poetntiometre and Boutton to be added.
-2. Width and hole size check needed.
+Training in Altium for a PCB project.
+
+The document is listed in [Altium_Docs](https://github.com/honorinli151/CoursINC/Altium_Docs)
+
+## Second Lesson
+
+Training in Arduino
+
+Of which the docs are in [Arduino Docs](https://github.com/honorinli151/CoursINC/Arduino_Docs)
 
 github link
 
