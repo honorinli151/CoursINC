@@ -6,12 +6,12 @@
 
 
 
-int next_musique = 4;
-int prev_musique = 5;
-int prin_musique = 16;
-int reset_pin = 15;
+int next_musique = 22;
+int prev_musique = 19;
+int prin_musique = 21;
+int reset_pin = 20;
 int reset_count = 0;
-
+int resetInterval = 10000;
 
 int buttonState = 0;     // current state of the button
 int lastButtonState = 0; // previous state of the button
@@ -19,9 +19,10 @@ int startPressed = 0;    // the time button was pressed
 int endPressed = 0;      // the time button was released
 int timeHold = 0;        // the time button is hold
 int timeReleased = 0;    // the time button is released
-int mode = 1;
+int mode = 0;
 bool control_musique=false; 
 bool starting = true; 
+bool charging = true;
 
 volatile float prtc;
 volatile float speed_now;
@@ -50,25 +51,52 @@ void setup(void)
   attachInterrupt(digitalPinToInterrupt(next_musique), nextMusique, FALLING);
   attachInterrupt(digitalPinToInterrupt(prev_musique), prevMusique, FALLING);
   attachInterrupt(digitalPinToInterrupt(prin_musique), runMusiqueControl, FALLING);
+//  attachInterrupt(digitalPinToInterrupt(reset_pin), drawChargingPage, FALLING);
   Serial.begin(9600);
   display.init(); // enable diagnostic output on Serial
  
   ratio = 0.33;
   display.update();
-  delay(100);
+//  delay(100);
 }
 
 void loop()
 {
   welcomePage(starting);
   starting = false;
+      buttonState = digitalRead(reset_pin);
+//    Serial.println(buttonState);
+//    Seiral.println("Reset button mouvement detected.")
+    // button state changed
+    if (buttonState != lastButtonState) { 
+      drawChargingPage();
+         Serial.println("Reset button mouvement detected.");
+        // the button was just pressed
+        if (buttonState == HIGH) {
+            startPressed = millis();
+            Serial.println("Pressed.");
+            timeReleased = startPressed - endPressed;
+            // the button was just released
+        } else {
+            endPressed = millis();
+            timeHold = endPressed - startPressed;
+            Serial.println("Holding Boutton For: ");
+            Serial.println(timeHold);        
+        }
+        resetActionMode(timeHold);
+//        resetAction(mode);
+    }
+    timeHold = 0;
+    // save the current state as the last state,
+    //for next time through the loop
+    lastButtonState = buttonState;
   resetAction(mode);
-  pressTimeReset();
-  resetActionMode(timeHold);
+//  resetBouttonDetect();
+//  resetActionMode(timeHold);
 //   showPartialUpdate_2();
 //  pressTimeReset();
 //    showPartialUpdate_2();
-  delay(200);
+//  delay(200);
 }
 
 void welcomePage(bool starting)  {
@@ -97,8 +125,9 @@ void showPartialUpdate_2() {
     display.setFont(&FreeSans9pt7b);
     display.setTextColor(GxEPD_BLACK);
     display.updateWindow(0, 0, W, H, false);
-//    drawBackground();
-    display.fillRect(0, 0, W, H, GxEPD_WHITE);
+    drawBackground();
+    updateBatterieLevelIndicator(prtc);
+    updateTime(hours, minutes);
     updateInfoDistance(distance_to_run,distance_run,time_remained,distance_accum);
 }
 
@@ -159,62 +188,75 @@ void ProcessMessage(String message) {
       
 }
 
-void pressTimeReset() {
-    // read the pushbutton input pin:
-    buttonState = digitalRead(reset_pin);
-    Seiral.println("Reset button mouvement detected.")
-    // button state changed
-    if (buttonState != lastButtonState) {
-        // the button was just pressed
-        if (buttonState == HIGH) {
-            startPressed = millis();
-            timeReleased = startPressed - endPressed;
-            // the button was just released
-        } else {
-            endPressed = millis();
-            timeHold = endPressed - startPressed;
-            Serial.println("Holding Boutton For: ");
-            Serial.println(timeHold);        
-        }
-        
-    }
-    // save the current state as the last state,
-    //for next time through the loop
-    lastButtonState = buttonState;
-}
+//void resetBouttonDetect() {
+//    // read the pushbutton input pin:
+//    buttonState = digitalRead(reset_pin);
+////    Serial.println(buttonState);
+////    Seiral.println("Reset button mouvement detected.")
+//    // button state changed
+//    if (buttonState != lastButtonState) {
+//         Serial.println("Reset button mouvement detected.");
+//        // the button was just pressed
+//        if (buttonState == HIGH) {
+//            startPressed = millis();
+//            Serial.println("Pressed.");
+//            timeReleased = startPressed - endPressed;
+//            // the button was just released
+//        } else {
+//            endPressed = millis();
+//            timeHold = endPressed - startPressed;
+//            Serial.println("Holding Boutton For: ");
+//            Serial.println(timeHold);        
+//        }
+//        resetActionMode(timeHold);
+////        resetAction(mode);
+//    }
+//    // save the current state as the last state,
+//    //for next time through the loop
+//    lastButtonState = buttonState;
+//}
 
 void runMusiqueControl() {
     control_musique = !control_musique;
     controlMusique(control_musique);
-    Serial.println("Music contorlling...")
+    Serial.println("Music contorlling...");
 }
 
 void resetActionMode(int timeHold) {
-    if (timeHold>=5000) {
+    if (timeHold>=resetInterval) {
         mode = 2;
     }
-    if (timeHold > 0 && timeHold < 5000) {
-        mode = 1;
-    }
-    if (timeHold == 0) {
-        mode = 0;
-    }
+    if (timeHold > 0 && timeHold < resetInterval) {
+      Serial.println("Mode Original");
+      Serial.println(mode);
+      switch(mode) {
+        case 1: mode = 0; break;
+        case 0: mode = 1; break;
+        case 2: mode = 1; break;
+      }
+      Serial.println("Mode changed.");
+      Serial.println(mode);
+//      Serial.println(timeHold);
+      }
 }
 
 void resetAction(int mode) {
+  Serial.println("Mode in resetAction");
+  Serial.println(mode);
     if (mode==0) {
         showPartialUpdate_1();
     }
     if (mode==1) {
         // display.fillRect(0, 0, W, H, GxEPD_WHITE);
         showPartialUpdate_2();
-        delay(3000);
+//        delay(3000);
         // display.fillRect(0, 0, W, H, GxEPD_WHITE);
-        mode = 0;
+//        mode = 0;
     }
     if (mode==2) {
         distance_accum = distance_run;
         distance_run = 0;
+        mode = 1;
     }
 }
 

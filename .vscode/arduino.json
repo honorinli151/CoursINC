@@ -1,0 +1,7 @@
+{
+    "sketch": "v1.ino",
+    "port": "COM5",
+    "board": "Teensy LC",
+    "output": "../build",
+    "prebuild": "bash prebuild.sh"
+}

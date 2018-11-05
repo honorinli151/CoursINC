@@ -81,12 +81,12 @@ void updateTime(int hours, int minutes) {
 
 void nextMusique() {
     Serial.println("#NEXT");
-    Serial.println("NEXT Musique.")
+    Serial.println("NEXT Musique.");
 }
 
 void prevMusique() {
     Serial.println("#PREV");
-    Serial.println("Previous Musique.")
+    Serial.println("Previous Musique.");
 }
 
 void controlMusique(bool control_musique) {
@@ -164,16 +164,33 @@ void drawWelcomePage() {
   // display.fillScreen(GxEPD_WHITE);
 }
 
+void drawChargingPage() {
+  display.updateWindow(0, 0, W, H, true);
+  const char* euro_detect = "EuroDetect";
+  // display.fillScreen(GxEPD_WHITE);
+  display.setTextColor(GxEPD_BLACK);
+  display.setFont(&FreeMonoBold9pt7b);
+  display.setRotation(1.5);
+  display.setCursor(70, 60);
+  display.setTextSize(1);
+  display.updateWindow(0, 0, W, H, false);
+//  display.fillRect(0, 0, W, H, GxEPD_WHITE);
+//  display.print(euro_detect);
+  display.setCursor(80,10);
+  display.print("Charging...");
+  // delay(2000);
+  // display.fillScreen(GxEPD_WHITE);
+}
 void updateInfoDistance(int distance_to_run, int distance_run,int time_remained,int distance_accum) {
-  display.setCursor(40, 30);
+  display.setCursor(40, 45);
   display.print("Distance covered: ");
   display.print(distance_run);
   display.print(" m");
-  display.setCursor(40, 60);
+  display.setCursor(40, 75);
   display.print("Distance to cover: ");
   display.print(distance_to_run);
   display.print(" m");
-  display.setCursor(40, 90);
+  display.setCursor(40, 105);
   display.print("From last reset: ");
   display.print(distance_accum);
   display.print(" m");
