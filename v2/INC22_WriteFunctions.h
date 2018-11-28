@@ -139,16 +139,16 @@ void updateEved(String sortie, int eved, String street_name, int angle) {
       display.drawExampleBitmap(gImage_Arrow_up, EVED_C-80, 50, 40, 40, GxEPD_WHITE);
     }
     if (angle>0 && angle<=80) {
-      display.drawExampleBitmap(gImage_Arrow_right, EVED_C-80, 50, 40, 40, GxEPD_BLACK);
+      display.drawExampleBitmap(gImage_Arrow_right, EVED_C-80, 50, 40, 40, GxEPD_WHITE);
     } 
     if (angle>280 && angle<=360) {
-      display.drawExampleBitmap(gImage_Arrow_right, EVED_C-80, 50, 40, 40, GxEPD_BLACK);
+      display.drawExampleBitmap(gImage_Arrow_right, EVED_C-80, 50, 40, 40, GxEPD_WHITE);
     } 
     if (angle>=100 && angle <260) {
-      display.drawExampleBitmap(gImage_Arrow_left, EVED_C-80, 50, 40, 40, GxEPD_BLACK);
+      display.drawExampleBitmap(gImage_Arrow_left, EVED_C-80, 50, 40, 40, GxEPD_WHITE);
     }
     if (angle>260 && angle<=280) {
-      display.drawExampleBitmap(gImage_Arrow_down, EVED_C-80, 50, 40, 40, GxEPD_BLACK);
+      display.drawExampleBitmap(gImage_Arrow_down, EVED_C-80, 50, 40, 40, GxEPD_WHITE);
     }
   }
   if (eved>alert_distance) {

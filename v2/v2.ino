@@ -162,7 +162,7 @@ void prevMusique() {
 void runMusiqueControl() {
   if (digitalRead(prin_musique) == HIGH) {
     control_musique = !control_musique;
-    COMSERIAL.println(control_musique);
+    // COMSERIAL.println(control_musique);
     if (control_musique == false) {
       COMSERIAL.println("#PAUS");
     }
